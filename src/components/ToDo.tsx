@@ -1,13 +1,7 @@
 import React from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import {
-  Categories,
-  categoryListState,
-  IToDo,
-  saveToDoToLocalStorage,
-  toDoState,
-} from "../atom";
+import { Categories, categoryListState, IToDo, toDoState } from "../atom";
 
 const Li = styled.div`
   display: flex;
@@ -41,7 +35,6 @@ function ToDo({ text, category, id }: IToDo) {
       } else {
         newTodos.splice(targetIndex, 1, newToDo);
       }
-      saveToDoToLocalStorage(newTodos);
       return newTodos;
     });
   };

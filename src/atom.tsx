@@ -1,52 +1,15 @@
 import { atom, selector } from "recoil";
+import { recoilPersist } from "recoil-persist";
 
-//Local Storage 에서 ToDo 데이터 불러오기
-export const loadToDoFromLocalStorage = (): IToDo[] => {
-  try {
-    const serializedState = localStorage.getItem("toDo");
-    if (serializedState === null) {
-      return [];
-    }
-    return JSON.parse(serializedState);
-  } catch (err) {
-    console.error("Error loading state from localStorage:", err);
-    return [];
-  }
-};
+const { persistAtom: persistToDo } = recoilPersist({
+  key: "toDo",
+  storage: localStorage,
+});
 
-//Local Storage 에서 ToDo 데이터 저장
-export const saveToDoToLocalStorage = (data: IToDo[]): void => {
-  try {
-    const serializedState = JSON.stringify(data);
-    localStorage.setItem("toDo", serializedState);
-  } catch (err) {
-    console.error("Error saving state to localStorage:", err);
-  }
-};
-
-//Local Storage 에서 Category 데이터 불러오기
-export const loadCategoryFromLocalStorage = (): string[] => {
-  try {
-    const serializedState = localStorage.getItem("categoryList");
-    if (serializedState === null) {
-      return [];
-    }
-    return JSON.parse(serializedState);
-  } catch (err) {
-    console.error("Error loading state from localStorage:", err);
-    return [];
-  }
-};
-
-//Local Storage 에서 Category 데이터 저장
-export const saveCategoryToLocalStorage = (data: string[]): void => {
-  try {
-    const serializedState = JSON.stringify(data);
-    localStorage.setItem("categoryList", serializedState);
-  } catch (err) {
-    console.error("Error saving state to localStorage:", err);
-  }
-};
+const { persistAtom: persistCategory } = recoilPersist({
+  key: "categoryList",
+  storage: localStorage,
+});
 
 export enum Categories {
   "TO_DO" = "TO_DO",
@@ -68,12 +31,14 @@ export const categoryState = atom<Categories>({
 
 export const categoryListState = atom<string[]>({
   key: "categoryList",
-  default: loadCategoryFromLocalStorage(),
+  default: [],
+  effects_UNSTABLE: [persistCategory],
 });
 
 export const toDoState = atom<IToDo[]>({
   key: "toDo",
-  default: loadToDoFromLocalStorage(),
+  default: [],
+  effects_UNSTABLE: [persistToDo],
 });
 
 export const toDoSelector = selector({

@@ -7,7 +7,6 @@ import {
   categoryListState,
   categoryState,
   IToDo,
-  saveCategoryToLocalStorage,
   toDoSelector,
   toDoState,
 } from "../atom";
@@ -63,7 +62,6 @@ function ToDoList() {
     if (newCategory != null) {
       const newCategoryList = [...categoryList, newCategory];
       setCategoryList(newCategoryList);
-      saveCategoryToLocalStorage(newCategoryList);
     } else {
       return false;
     }

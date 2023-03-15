@@ -1,12 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import {
-  categoryState,
-  IToDo,
-  saveToDoToLocalStorage,
-  toDoState,
-} from "../atom";
+import { categoryState, IToDo, toDoState } from "../atom";
 
 const Form = styled.form`
   display: flex;
@@ -40,7 +35,6 @@ function CreateToDo() {
         { text: toDo, id: Date.now(), category: category },
         ...oldToDos,
       ];
-      saveToDoToLocalStorage(newTodos);
       return newTodos;
     });
 
