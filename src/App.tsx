@@ -60,7 +60,8 @@ const GlobalStyle = createGlobalStyle`
       color:inherit;
     }
     button{
-      padding: 10px;
+      padding: 5px;
+      margin-left: 5px;
       font-family: 'Source Sans Pro', sans-serif;
       font-size: 12pt;
       color: ${(props) => props.theme.textColor};

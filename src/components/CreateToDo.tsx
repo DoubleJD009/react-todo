@@ -1,7 +1,24 @@
 import { useForm } from "react-hook-form";
-import { useSetRecoilState } from "recoil";
-import { toDoState } from "../atom";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import styled from "styled-components";
+import {
+  categoryState,
+  IToDo,
+  saveToDoToLocalStorage,
+  toDoState,
+} from "../atom";
 
+const Form = styled.form`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+const Input = styled.input`
+  padding: 10px;
+  font-size: 11pt;
+  flex-grow: 1;
+`;
 interface IForm {
   toDo: string;
 }
@@ -16,23 +33,29 @@ function CreateToDo() {
   } = useForm<IForm>();
 
   const setToDos = useSetRecoilState(toDoState);
+  const category = useRecoilValue(categoryState);
   const onValid = ({ toDo }: IForm) => {
-    setToDos((oldToDos) => [
-      { text: toDo, id: Date.now(), category: "TO_DO" },
-      ...oldToDos,
-    ]);
+    setToDos((oldToDos) => {
+      const newTodos = [
+        { text: toDo, id: Date.now(), category: category },
+        ...oldToDos,
+      ];
+      saveToDoToLocalStorage(newTodos);
+      return newTodos;
+    });
+
     setValue("toDo", "");
   };
   return (
-    <form onSubmit={handleSubmit(onValid)}>
-      <input
+    <Form onSubmit={handleSubmit(onValid)}>
+      <Input
         {...register("toDo", {
           required: "Please write a To Do",
         })}
         placeholder="Write a to do"
       />
       <button>Add</button>
-    </form>
+    </Form>
   );
 }
 

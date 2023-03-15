@@ -1,28 +1,102 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { atom, useRecoilState, useRecoilValue } from "recoil";
-import { toDoState } from "../atom";
+import styled from "styled-components";
+import {
+  Categories,
+  categoryListState,
+  categoryState,
+  IToDo,
+  saveCategoryToLocalStorage,
+  toDoSelector,
+  toDoState,
+} from "../atom";
 import CreateToDo from "./CreateToDo";
 import ToDo from "./ToDo";
 
+const Header = styled.header`
+  height: 5vh;
+  font-size: 18pt;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Container = styled.div`
+  padding: 0px 20px;
+  max-width: 480px;
+  margin: 0 auto;
+`;
+
+const Content = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+const SelectDiv = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+const Select = styled.select`
+  padding: 10px;
+  font-size: 13pt;
+  border-radius: 10px;
+  flex-grow: 1;
+`;
+
+const Hr = styled.hr`
+  width: 100%;
+`;
+
 function ToDoList() {
-  const toDos = useRecoilValue(toDoState);
+  const toDos = useRecoilValue(toDoSelector);
+  const [category, setCategory] = useRecoilState(categoryState);
+  const [categoryList, setCategoryList] = useRecoilState(categoryListState);
+  const onInput = (event: React.FormEvent<HTMLSelectElement>) => {
+    setCategory(event.currentTarget.value as IToDo["category"]);
+  };
+
+  const addCategory = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const newCategory = prompt("Custom category name", "");
+
+    if (newCategory != null) {
+      const newCategoryList = [...categoryList, newCategory];
+      setCategoryList(newCategoryList);
+      saveCategoryToLocalStorage(newCategoryList);
+    } else {
+      return false;
+    }
+  };
   // const value = useRecoilValue(toDoState);
   // const modFn = useSetRecoilState(toDoState);
-
   // console.log(errors);
 
   return (
-    <div>
-      <h1>To Dos</h1>
-      <hr />
-      <CreateToDo />
-      <ul>
-        {toDos.map((toDo) => (
+    <Container>
+      <Header>To Dos</Header>
+      <Hr />
+      <Content>
+        <SelectDiv>
+          <Select value={category} onInput={onInput}>
+            <option value={Categories.TO_DO}>To Do</option>
+            <option value={Categories.DOING}>Doing</option>
+            <option value={Categories.DONE}>Done</option>
+            {categoryList?.map((category) => (
+              <option value={category}>{category}</option>
+            ))}
+          </Select>
+          <button value={Categories.DELETE} onClick={addCategory}>
+            Add
+          </button>
+        </SelectDiv>
+        <CreateToDo />
+        <Hr />
+        {toDos?.map((toDo) => (
           <ToDo key={toDo.id} {...toDo} />
         ))}
-      </ul>
-    </div>
+      </Content>
+    </Container>
   );
 
   // return (

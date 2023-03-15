@@ -1,9 +1,21 @@
 import React from "react";
-import { useSetRecoilState } from "recoil";
-import { IToDo, toDoState } from "../atom";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import styled from "styled-components";
+import {
+  Categories,
+  categoryListState,
+  IToDo,
+  saveToDoToLocalStorage,
+  toDoState,
+} from "../atom";
+
+const Li = styled.li`
+  font-size: 18pt;
+`;
 
 function ToDo({ text, category, id }: IToDo) {
   const setToDos = useSetRecoilState(toDoState);
+  const categoryList = useRecoilValue(categoryListState);
   const onClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const {
       currentTarget: { name },
@@ -12,29 +24,42 @@ function ToDo({ text, category, id }: IToDo) {
       const targetIndex = oldToDos.findIndex((toDo) => toDo.id === id);
       const newToDo: IToDo = { text, id, category: name as IToDo["category"] };
       const newTodos = [...oldToDos]; // create new array
-      newTodos.splice(targetIndex, 1, newToDo);
+      if (name === Categories.DELETE) {
+        newTodos.splice(targetIndex, 1);
+      } else {
+        newTodos.splice(targetIndex, 1, newToDo);
+      }
+      saveToDoToLocalStorage(newTodos);
       return newTodos;
     });
   };
   return (
-    <li>
+    <Li>
       <span>{text}</span>
-      {category !== "DOING" && (
-        <button name="DOING" onClick={onClick}>
+      {category !== Categories.DOING && (
+        <button name={Categories.DOING} onClick={onClick}>
           Doing
         </button>
       )}
-      {category !== "TO_DO" && (
-        <button name="TO_DO" onClick={onClick}>
+      {category !== Categories.TO_DO && (
+        <button name={Categories.TO_DO} onClick={onClick}>
           To Do
         </button>
       )}
-      {category !== "DONE" && (
-        <button name="DONE" onClick={onClick}>
+      {category !== Categories.DONE && (
+        <button name={Categories.DONE} onClick={onClick}>
           Done
         </button>
       )}
-    </li>
+      {categoryList?.map((category) => (
+        <button name={category} onClick={onClick}>
+          {category}
+        </button>
+      ))}
+      <button name={Categories.DELETE} onClick={onClick}>
+        Delete
+      </button>
+    </Li>
   );
 }
 
